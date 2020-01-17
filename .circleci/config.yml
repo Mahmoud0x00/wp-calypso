@@ -212,12 +212,12 @@ jobs:
       - run: *update-git-master
       - save_cache: *save-git-cache
       # npm dependencies
-      # - restore_cache: *restore-tsc-cache
+      - restore_cache: *restore-tsc-cache
       - restore_cache: *restore-npm-cache
       - run: *npm-install
       - run: *npm-e2e-install
       - save_cache: *save-npm-cache
-      # - save_cache: *save-tsc-cache
+      - save_cache: *save-tsc-cache
       - run: npm run build-packages
       - persist_to_workspace:
           root: '~'
