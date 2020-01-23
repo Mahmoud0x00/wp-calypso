@@ -114,6 +114,7 @@ function translateWpcomCartItemToCheckoutCartItem(
 			uuid: String( index ),
 			meta: typeof meta === 'string' ? meta : undefined,
 			product_id,
+			product_slug,
 			extra,
 			volume,
 		},
