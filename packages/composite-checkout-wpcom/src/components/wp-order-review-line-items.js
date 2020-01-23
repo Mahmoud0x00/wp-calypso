@@ -16,8 +16,8 @@ import { useTranslate } from 'i18n-calypso';
  */
 import joinClasses from './join-classes';
 import Button from './button';
-import RadioButton from './radio-button';
 import { useHasDomainsInCart } from '../hooks/has-domains';
+import { ItemVariationPicker } from './item-variation-picker';
 
 export function WPOrderReviewSection( { children, className } ) {
 	return (
@@ -75,7 +75,9 @@ function WPLineItem( { item, className, hasDeleteButton, removeItem, getProductV
 				</React.Fragment>
 			) }
 
-			{ item.type === 'plan' && <PlanTermOptions /> }
+			{ item.wpcom_meta && (
+				<ItemVariationPicker selectedItem={ item } getVariants={ getProductVariants } />
+			) }
 		</div>
 	);
 }
@@ -175,7 +177,13 @@ export function WPOrderReviewTotal( { total, className } ) {
 	);
 }
 
-export function WPOrderReviewLineItems( { items, className, isSummaryVisible, removeItem, getProductVariants } ) {
+export function WPOrderReviewLineItems( {
+	items,
+	className,
+	isSummaryVisible,
+	removeItem,
+	getProductVariants,
+} ) {
 	return (
 		<WPOrderReviewList className={ joinClasses( [ className, 'order-review-line-items' ] ) }>
 			{ items.map( item => (
@@ -185,7 +193,7 @@ export function WPOrderReviewLineItems( { items, className, isSummaryVisible, re
 						item={ item }
 						hasDeleteButton={ canItemBeDeleted( item ) }
 						removeItem={ removeItem }
-                        getProductVariants={ getProductVariants }
+						getProductVariants={ getProductVariants }
 					/>
 				</WPOrderReviewListItems>
 			) ) }
