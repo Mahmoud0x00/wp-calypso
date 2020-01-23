@@ -33,7 +33,7 @@
 		"importHelpers": true,
 
 		"incremental": true,
-		"tsBuildInfoFile": "../../.tsc-cache/.tsbuildinfo-data-stores"
+		"tsBuildInfoFile": "../../.tsc-cache/data-stores"
 	},
 	"files": [ "./src/index.ts", "./global.d.ts" ],
 	"exclude": [ "**/docs/*", "**/test/*" ]

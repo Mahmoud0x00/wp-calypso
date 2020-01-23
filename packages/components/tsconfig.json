@@ -25,7 +25,7 @@
 		"types": [],
 
 		"incremental": true,
-		"tsBuildInfoFile": "../../.tsc-cache/.tsbuildinfo-components"
+		"tsBuildInfoFile": "../../.tsc-cache/components"
 	},
 	"include": [ "src" ],
 	"exclude": [ "**/docs/*", "**/test/*" ]

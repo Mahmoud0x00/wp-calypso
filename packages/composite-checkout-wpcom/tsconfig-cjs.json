@@ -6,6 +6,6 @@
 		"declarationDir": null,
 		"outDir": "./dist/cjs",
 
-		"tsBuildInfoFile": "../../.tsc-cache/.tsbuildinfo-composite-checkout-wpcom-cjs"
+		"tsBuildInfoFile": "../../.tsc-cache/composite-checkout-wpcom-cjs"
 	}
 }

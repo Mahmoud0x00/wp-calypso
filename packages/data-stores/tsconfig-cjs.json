@@ -6,6 +6,6 @@
 		"declarationDir": null,
 		"outDir": "./dist/cjs",
 
-		"tsBuildInfoFile": "../../.tsc-cache/.tsbuildinfo-data-stores-cjs"
+		"tsBuildInfoFile": "../../.tsc-cache/data-stores-cjs"
 	}
 }
