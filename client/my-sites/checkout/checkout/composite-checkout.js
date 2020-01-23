@@ -4,6 +4,7 @@
 import page from 'page';
 import wp from 'lib/wp';
 import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import { connect } from 'react-redux';
 import { useTranslate } from 'i18n-calypso';
 import PropTypes from 'prop-types';
 import debugFactory from 'debug';
@@ -40,6 +41,11 @@ import getCountries from 'state/selectors/get-countries';
 import { fetchPaymentCountries } from 'state/countries/actions';
 import { StateSelect } from 'my-sites/domains/components/form';
 import ContactDetailsFormFields from 'components/domains/contact-details-form-fields';
+import { getPlan, findPlansKeys, getPlans } from 'lib/plans';
+import { GROUP_WPCOM, TERM_ANNUALLY, TERM_BIENNIALLY, TERM_MONTHLY } from 'lib/plans/constants';
+import { computeProductsWithPrices } from 'state/products-list/selectors';
+import { getCurrentUserCurrencyCode } from 'state/current-user/selectors';
+import { requestProductsList } from 'state/products-list/actions';
 
 const debug = debugFactory( 'calypso:composite-checkout' );
 
@@ -56,7 +62,7 @@ const wpcomGetStoredCards = ( ...args ) => wpcom.getStoredCards( ...args );
 const wpcomValidateDomainContactInformation = ( ...args ) =>
 	wpcom.validateDomainContactInformation( ...args );
 
-export default function CompositeCheckout( {
+export function CompositeCheckout( {
 	siteSlug,
 	siteId,
 	product,
@@ -69,6 +75,8 @@ export default function CompositeCheckout( {
 	// TODO: handle these also
 	// purchaseId,
 	// couponCode,
+    userCurrencyCode,
+    getProductsWithPrices,
 } ) {
 	const translate = useTranslate();
 	const planSlug = useSelector( state => getUpgradePlanSlugFromPath( state, siteId, product ) );
@@ -390,3 +398,34 @@ function TestingBanner() {
 		</Card>
 	);
 }
+
+// TODO: move this to a more appropriate place
+function getPlanItems(
+    items // : WPCOMCart
+) /* : WPCOMCartItem[] */ {
+    return items.filter(
+        ( item ) => { return (item.type !== 'tax') && getPlan( item.wpcom_meta.product_slug ) }
+    );
+}
+
+const mapStateToProps = ( state, { siteId } ) => {
+    console.log( 'state:', state );
+    return {
+        userCurrencyCode: getCurrentUserCurrencyCode( state ),
+        getProductsWithPrices: ( {
+            planSlugs, // : WPCOMProductSlug[]
+            credits, // : number
+            couponDiscounts, // object of product ID / absolute amount pairs
+        } ) => {
+            return computeProductsWithPrices(
+                state,
+                siteId,
+                planSlugs,
+                credits || 0,
+                couponDiscounts || {}
+            );
+        },
+    };
+};
+
+export default connect( mapStateToProps )( CompositeCheckout );
