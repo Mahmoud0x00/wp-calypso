@@ -52,6 +52,7 @@ export default function WPCheckout( {
 	countriesList,
 	StateSelect,
 	renderDomainContactFields,
+	getProductVariants,
 } ) {
 	const translate = useTranslate();
 
@@ -60,6 +61,7 @@ export default function WPCheckout( {
 			removeItem={ removeItem }
 			onChangePlanLength={ changePlanLength }
 			siteUrl={ siteUrl }
+			getProductVariants={ getProductVariants }
 		/>
 	);
 

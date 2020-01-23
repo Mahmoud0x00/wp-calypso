@@ -35,7 +35,7 @@ const OrderReviewSectionArea = styled.div`
 	margin-bottom: 16px;
 `;
 
-function WPLineItem( { item, className, hasDeleteButton, removeItem } ) {
+function WPLineItem( { item, className, hasDeleteButton, removeItem, getProductVariants } ) {
 	const translate = useTranslate();
 	const hasDomainsInCart = useHasDomainsInCart();
 	const { formStatus } = useFormStatus();
@@ -175,7 +175,7 @@ export function WPOrderReviewTotal( { total, className } ) {
 	);
 }
 
-export function WPOrderReviewLineItems( { items, className, isSummaryVisible, removeItem } ) {
+export function WPOrderReviewLineItems( { items, className, isSummaryVisible, removeItem, getProductVariants } ) {
 	return (
 		<WPOrderReviewList className={ joinClasses( [ className, 'order-review-line-items' ] ) }>
 			{ items.map( item => (
@@ -185,6 +185,7 @@ export function WPOrderReviewLineItems( { items, className, isSummaryVisible, re
 						item={ item }
 						hasDeleteButton={ canItemBeDeleted( item ) }
 						removeItem={ removeItem }
+                        getProductVariants={ getProductVariants }
 					/>
 				</WPOrderReviewListItems>
 			) ) }

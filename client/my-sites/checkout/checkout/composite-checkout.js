@@ -74,8 +74,8 @@ export function CompositeCheckout( {
 	// TODO: handle these also
 	// purchaseId,
 	// couponCode,
-    userCurrencyCode,
-    getProductsWithPrices,
+	userCurrencyCode,
+	getProductsWithPrices,
 } ) {
 	const translate = useTranslate();
 	const planSlug = useSelector( state => getUpgradePlanSlugFromPath( state, siteId, product ) );
@@ -231,56 +231,88 @@ export function CompositeCheckout( {
         );
     }
 
+	function getTermText( term ) {
+		switch ( term ) {
+			case TERM_BIENNIALLY:
+				return translate( 'Two years', {
+					context: 'subscription length',
+				} );
+
+			case TERM_ANNUALLY:
+				return translate( 'One year', {
+					context: 'subscription length',
+				} );
+
+			case TERM_MONTHLY:
+				return translate( 'One month', {
+					context: 'subscription length',
+				} );
+		}
+	}
+
+	function getTaxText() {
+		return (
+			<sup>
+				{ translate( '+tax', {
+					comment:
+						'This string is displayed immediately next to a localized price with a currency symbol, and is indicating that there may be an additional charge on top of the displayed price.',
+				} ) }
+			</sup>
+		);
+	}
+
 	const [ shouldFetchProductsAndPlans, setShouldFetchProductsAndPlans ] = useState( true );
 
-	const getWPCOMProductVariants = ( productSlug ) => {
-	    const chosenPlan = getPlan( productSlug );
+	const getWPCOMProductVariants = productSlug => {
+		const chosenPlan = getPlan( productSlug );
 
-	    if ( ! chosenPlan ) {
-	        return [];
-        }
+		if ( ! chosenPlan ) {
+			return [];
+		}
 
-        // Only construct variants for WP.com plans
-        if ( chosenPlan.group !== GROUP_WPCOM ) {
-            return [];
-        }
+		// Only construct variants for WP.com plans
+		if ( chosenPlan.group !== GROUP_WPCOM ) {
+			return [];
+		}
 
-        // : WPCOMProductSlug[]
-        const availableVariants = findPlansKeys( {
-            group: chosenPlan.group,
-            type: chosenPlan.type,
-        } ); // .filter( planSlug => getPlan( planSlug ).availableFor( productSlug ) );
+		// : WPCOMProductSlug[]
+		const availableVariants = findPlansKeys( {
+			group: chosenPlan.group,
+			type: chosenPlan.type,
+		} ); // .filter( planSlug => getPlan( planSlug ).availableFor( productSlug ) );
 
-	    const variants = getProductsWithPrices( {
-            planSlugs: availableVariants,
-        } );
+		const variants = getProductsWithPrices( {
+			planSlugs: availableVariants,
+		} );
 
-        const dispatch = useDispatch();
-        useEffect( () => {
-            if ( shouldFetchProductsAndPlans ) {
-                debug( 'dispatching request for product and plan data' );
-                dispatch( requestProductsList() );
-                dispatch( requestPlans() );
-                setShouldFetchProductsAndPlans( false );
-            }
-        }, [ dispatch, shouldFetchProductsAndPlans, setShouldFetchProductsAndPlans ] );
+		const dispatch = useDispatch();
+		useEffect( () => {
+			if ( shouldFetchProductsAndPlans ) {
+				debug( 'dispatching request for product and plan data' );
+				dispatch( requestProductsList() );
+				dispatch( requestPlans() );
+				setShouldFetchProductsAndPlans( false );
+			}
+		}, [ dispatch, shouldFetchProductsAndPlans, setShouldFetchProductsAndPlans ] );
 
-	    console.log( productSlug, 'variants:', availableVariants, variants );
+		console.log( productSlug, 'variants:', availableVariants, variants );
 
-        return variants.map( ( variant ) => {
-            const label = getTermText( variant.plan.term );
-            const price = <React.Fragment>
-                { variant.product.cost_display}
-                { getTaxText() }
-            </React.Fragment>;
+		return variants.map( variant => {
+			const label = getTermText( variant.plan.term );
+			const price = (
+				<React.Fragment>
+					{ variant.product.cost_display }
+					{ getTaxText() }
+				</React.Fragment>
+			);
 
-            return {
-                variantLabel: label,
-                variantDetails: price,
-                productSlug: variant.planSlug,
-            };
-        } );
-    };
+			return {
+				variantLabel: label,
+				variantDetails: price,
+				productSlug: variant.planSlug,
+			};
+		} );
+	};
 
 	return (
 		<React.Fragment>
@@ -307,6 +339,7 @@ export function CompositeCheckout( {
 					countriesList={ countriesList }
 					StateSelect={ StateSelect }
 					renderDomainContactFields={ renderDomainContactFields }
+					getProductVariants={ getWPCOMProductVariants }
 				/>
 			</CheckoutProvider>
 		</React.Fragment>
@@ -481,31 +514,31 @@ function TestingBanner() {
 
 // TODO: move this to a more appropriate place
 function getPlanItems(
-    items // : WPCOMCart
+	items // : WPCOMCart
 ) /* : WPCOMCartItem[] */ {
-    return items.filter(
-        ( item ) => { return (item.type !== 'tax') && getPlan( item.wpcom_meta.product_slug ) }
-    );
+	return items.filter( item => {
+		return item.type !== 'tax' && getPlan( item.wpcom_meta.product_slug );
+	} );
 }
 
 const mapStateToProps = ( state, { siteId } ) => {
-    console.log( 'state:', state );
-    return {
-        userCurrencyCode: getCurrentUserCurrencyCode( state ),
-        getProductsWithPrices: ( {
-            planSlugs, // : WPCOMProductSlug[]
-            credits, // : number
-            couponDiscounts, // object of product ID / absolute amount pairs
-        } ) => {
-            return computeProductsWithPrices(
-                state,
-                siteId,
-                planSlugs,
-                credits || 0,
-                couponDiscounts || {}
-            );
-        },
-    };
+	console.log( 'state:', state );
+	return {
+		userCurrencyCode: getCurrentUserCurrencyCode( state ),
+		getProductsWithPrices: ( {
+			planSlugs, // : WPCOMProductSlug[]
+			credits, // : number
+			couponDiscounts, // object of product ID / absolute amount pairs
+		} ) => {
+			return computeProductsWithPrices(
+				state,
+				siteId,
+				planSlugs,
+				credits || 0,
+				couponDiscounts || {}
+			);
+		},
+	};
 };
 
 export default connect( mapStateToProps )( CompositeCheckout );

@@ -19,7 +19,12 @@ import {
 	WPOrderReviewSection,
 } from './wp-order-review-line-items';
 
-export default function WPCheckoutOrderReview( { className, removeItem, siteUrl } ) {
+export default function WPCheckoutOrderReview( {
+	className,
+	removeItem,
+	siteUrl,
+	getProductVariants,
+} ) {
 	const [ items, total ] = useLineItems();
 	const { formStatus } = useFormStatus();
 	const firstDomainItem = items.find( isLineItemADomain );
@@ -28,7 +33,11 @@ export default function WPCheckoutOrderReview( { className, removeItem, siteUrl 
 	return (
 		<div className={ joinClasses( [ className, 'checkout-review-order' ] ) }>
 			<WPOrderReviewSection>
-				<WPOrderReviewLineItems items={ items } removeItem={ removeItem } />
+				<WPOrderReviewLineItems
+					items={ items }
+					removeItem={ removeItem }
+					getProductVariants={ getProductVariants }
+				/>
 			</WPOrderReviewSection>
 
 			<CouponField id="order-review-coupon" disabled={ formStatus !== 'ready' } />
