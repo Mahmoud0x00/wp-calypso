@@ -4,11 +4,10 @@
 import page from 'page';
 import wp from 'lib/wp';
 import React, { useMemo, useEffect, useState, useCallback } from 'react';
-import { connect } from 'react-redux';
 import { useTranslate } from 'i18n-calypso';
 import PropTypes from 'prop-types';
 import debugFactory from 'debug';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import {
 	WPCheckout,
 	WPCheckoutErrorBoundary,
@@ -201,6 +200,87 @@ export function CompositeCheckout( {
 			</WPCheckoutErrorBoundary>
 		);
 	};
+
+    function getTermText( term ) {
+        switch ( term ) {
+            case TERM_BIENNIALLY:
+                return translate( 'Two years', {
+                    context: 'subscription length',
+                } );
+
+            case TERM_ANNUALLY:
+                return translate( 'One year', {
+                    context: 'subscription length',
+                } );
+
+            case TERM_MONTHLY:
+                return translate( 'One month', {
+                    context: 'subscription length',
+                } );
+        }
+    }
+
+    function getTaxText() {
+        return (
+            <sup>
+                { translate( '+tax', {
+                    comment:
+                        'This string is displayed immediately next to a localized price with a currency symbol, and is indicating that there may be an additional charge on top of the displayed price.',
+                } ) }
+            </sup>
+        );
+    }
+
+	const [ shouldFetchProductsAndPlans, setShouldFetchProductsAndPlans ] = useState( true );
+
+	const getWPCOMProductVariants = ( productSlug ) => {
+	    const chosenPlan = getPlan( productSlug );
+
+	    if ( ! chosenPlan ) {
+	        return [];
+        }
+
+        // Only construct variants for WP.com plans
+        if ( chosenPlan.group !== GROUP_WPCOM ) {
+            return [];
+        }
+
+        // : WPCOMProductSlug[]
+        const availableVariants = findPlansKeys( {
+            group: chosenPlan.group,
+            type: chosenPlan.type,
+        } ); // .filter( planSlug => getPlan( planSlug ).availableFor( productSlug ) );
+
+	    const variants = getProductsWithPrices( {
+            planSlugs: availableVariants,
+        } );
+
+        const dispatch = useDispatch();
+        useEffect( () => {
+            if ( shouldFetchProductsAndPlans ) {
+                debug( 'dispatching request for product and plan data' );
+                dispatch( requestProductsList() );
+                dispatch( requestPlans() );
+                setShouldFetchProductsAndPlans( false );
+            }
+        }, [ dispatch, shouldFetchProductsAndPlans, setShouldFetchProductsAndPlans ] );
+
+	    console.log( productSlug, 'variants:', availableVariants, variants );
+
+        return variants.map( ( variant ) => {
+            const label = getTermText( variant.plan.term );
+            const price = <React.Fragment>
+                { variant.product.cost_display}
+                { getTaxText() }
+            </React.Fragment>;
+
+            return {
+                variantLabel: label,
+                variantDetails: price,
+                productSlug: variant.planSlug,
+            };
+        } );
+    };
 
 	return (
 		<React.Fragment>
