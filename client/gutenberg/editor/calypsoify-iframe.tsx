@@ -97,7 +97,7 @@ enum EditorActions {
 	OpenTemplatePart = 'openTemplatePart',
 	GetCloseButtonUrl = 'getCloseButtonUrl',
 	LogError = 'logError',
-	GetLaunchButton = 'getLaunchButton',
+	GetGutenboardingStatus = 'getGutenboardingStatus',
 }
 
 class CalypsoifyIframe extends Component< Props & ConnectedProps & ProtectedFormProps, State > {
@@ -280,12 +280,13 @@ class CalypsoifyIframe extends Component< Props & ConnectedProps & ProtectedForm
 			} );
 		}
 
-		if ( EditorActions.GetLaunchButton === action ) {
+		if ( EditorActions.GetGutenboardingStatus === action ) {
 			// Some logic to determine if we want the launch button
 			// Gutenboarding context + unpublished site?
-			const hasLaunchButtonOverride = true;
+			const isGutenboarding = true;
 			ports[ 0 ].postMessage( {
-				hasLaunchButtonOverride: hasLaunchButtonOverride,
+				isGutenboarding,
+				frankenflowUrl: `${ window.location.origin }/start/frankenflow`,
 			} );
 		}
 
