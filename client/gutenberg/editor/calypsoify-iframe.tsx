@@ -148,7 +148,10 @@ class CalypsoifyIframe extends Component< Props & ConnectedProps & ProtectedForm
 			this.iframeRef.current.contentWindow
 		) {
 			this.successfulIframeLoad = true;
-			const { port1: iframePortObject, port2: transferredPortObject } = new MessageChannel();
+			const {
+				port1: iframePortObject,
+				port2: transferredPortObject,
+			} = new globalThis.MessageChannel();
 
 			this.iframePort = iframePortObject;
 			this.iframePort.addEventListener( 'message', this.onIframePortMessage, false );
