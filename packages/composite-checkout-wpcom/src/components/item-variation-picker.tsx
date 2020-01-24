@@ -34,42 +34,42 @@ export const ItemVariationPicker: FunctionComponent< ItemVariationPickerProps > 
 	console.log( variants );
 
 	if ( variants.length < 2 ) {
-		return false;
+		return null;
 	}
 
 	return <TermOptions>{ variants.map( renderProductVariant( selectedProductSlug ) ) }</TermOptions>;
 };
 
-const renderProductVariant: (
-	WPCOMProductSlug
-) => ( WPCOMProductVariant, number ) => Component = selectedProductSlug => (
-	{ variantLabel, variantDetails, productSlug },
-	index
-) => {
-	const translate = useTranslate();
-	const key = index.toString() + productSlug;
+function renderProductVariant(
+	selectedProductSlug: WPCOMProductSlug
+): ( _0: WPCOMProductVariant, _1: number ) => JSX.Element {
+	return ( { variantLabel, variantDetails, productSlug }: WPCOMProductVariant, index: number ) => {
+		const translate = useTranslate();
+		const key = index.toString() + productSlug;
 
-	return (
-		<TermOptionsItem key={ key }>
-			<RadioButton
-				name={ key }
-				id={ key }
-				value={ productSlug }
-				checked={ productSlug === selectedProductSlug }
-				onChange={ () => {
-					console.log( 'Select:', variantLabel );
-				} }
-				ariaLabel={ translate( variantLabel ) }
-				label={
-					<React.Fragment>
-						<VariantLabel>{ translate( variantLabel ) }</VariantLabel>
-						{ variantDetails }
-					</React.Fragment>
-				}
-			/>
-		</TermOptionsItem>
-	);
-};
+		return (
+			<TermOptionsItem key={ key }>
+				<RadioButton
+					name={ key }
+					id={ key }
+					value={ productSlug }
+					checked={ productSlug === selectedProductSlug }
+					onChange={ () => {
+						console.log( 'Select:', variantLabel );
+					} }
+					ariaLabel={ translate( 'Select ' + variantLabel ) as string }
+					label={
+						<React.Fragment>
+							<VariantLabel>{ translate( variantLabel ) }</VariantLabel>
+							{ variantDetails }
+						</React.Fragment>
+					}
+					children={ [] }
+				/>
+			</TermOptionsItem>
+		);
+	};
+}
 
 const TermOptions = styled.ul`
 	flex-basis: 100%;
