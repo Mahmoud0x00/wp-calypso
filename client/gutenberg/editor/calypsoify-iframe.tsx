@@ -53,6 +53,7 @@ import * as T from 'types';
  */
 import './style.scss';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
 	duplicatePostId: T.PostId;
 	postId: T.PostId;
@@ -76,6 +77,7 @@ interface State {
 	postUrl?: T.URL;
 	previewUrl: T.URL;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 enum WindowActions {
 	Loaded = 'loaded',
